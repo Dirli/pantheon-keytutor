@@ -14,10 +14,4 @@ add_global_arguments(
 
 dep_gtk3 = dependency('gtk+-3.0')
 
-executable(
-    meson.project_name(),
-    dependencies: [
-        dep_gtk3
-    ],
-    install : true
-)
+subdir ('src')
