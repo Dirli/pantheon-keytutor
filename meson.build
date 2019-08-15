@@ -13,5 +13,6 @@ add_global_arguments(
 )
 
 dep_gtk3 = dependency('gtk+-3.0')
+dep_granite = dependency('granite')
 
 subdir ('src')
