@@ -25,6 +25,17 @@ namespace KeyTutor {
             return keys_map;
         }
 
+        public Gee.HashMap<string, uint16> get_chars_map () {
+            var chars_map = new Gee.HashMap<string, uint16> ();
+
+            keys_map.foreach ((k_entry) => {
+                chars_map[k_entry.value] = k_entry.key;
+                return true;
+            });
+
+            return chars_map;
+        }
+
         public string[] generate_lesson (uint8 lesson_level) {
             var let_occurrences = "";
             if (lessons_list.length > lesson_level) {
@@ -72,7 +83,7 @@ namespace KeyTutor {
 
             return gen_lesson;
         }
-
+chars_map
         public void generate_keys_map () {
             keys_map.clear ();
             lessons_list = {};

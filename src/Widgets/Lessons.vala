@@ -18,6 +18,7 @@ namespace KeyTutor {
 
             Gtk.Stack tasks_stack = new Gtk.Stack ();
             tasks_stack.expand = true;
+            tasks_stack.get_style_context ().add_class ("lessons-list");
             tasks_stack.add_titled (letter_lessons, "letters", _("Letters"));
 
             var stack_switcher = new Gtk.StackSwitcher ();

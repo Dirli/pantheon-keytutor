@@ -3,8 +3,11 @@ namespace KeyTutor {
         private Gtk.Grid view;
         private Widgets.Welcome welcome_widget;
         private Widgets.Header header_bar;
+        private Widgets.Lesson? lesson_widget;
 
         private Services.Lessons lessons_manager;
+
+        private Gee.HashMap<string, uint16> chars_map;
 
         public MainWindow (KeyTutorApp app) {
             set_application (app);
@@ -12,8 +15,13 @@ namespace KeyTutor {
             set_default_size (1150, 650);
             set_size_request (1150, 650);
 
+            Gtk.CssProvider provider = new Gtk.CssProvider();
+            provider.load_from_resource ("/io/elementary/keytutor/application.css");
+            Gtk.StyleContext.add_provider_for_screen (Gdk.Screen.get_default (), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
+
             lessons_manager = Services.Lessons.get_default ();
             lessons_manager.generate_keys_map ();
+            chars_map = lessons_manager.get_chars_map ();
 
             header_bar = new Widgets.Header ();
             header_bar.nav_clicked.connect (on_nav_clicked);
@@ -67,10 +75,26 @@ namespace KeyTutor {
 
         private void on_nav_clicked () {
             init_welcome ();
+            header_bar.show_nav_btn (false);
         }
 
         private void on_run_lesson (uint8 index, string course_name) {
-            //
+            string[]? text_arr = null;
+
+            switch (course_name) {
+                case "letters":
+                    text_arr = lessons_manager.generate_lesson (index);
+                    break;
+            }
+
+            if (text_arr != null && text_arr.length > 0) {
+                lesson_widget = new Widgets.Lesson (text_arr, chars_map);
+                lesson_widget.end_task.connect ((accuracy, speed, errors_hash) => {
+                    lesson_widget = null;
+                });
+
+                add_main_widget (lesson_widget);
+            }
         }
     }
 }
