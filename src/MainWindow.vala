@@ -74,6 +74,8 @@ namespace KeyTutor {
         }
 
         private void on_nav_clicked () {
+            lesson_widget = null;
+            key_release_event.disconnect (on_key_release);
             init_welcome ();
             header_bar.show_nav_btn (false);
         }
@@ -91,10 +93,20 @@ namespace KeyTutor {
                 lesson_widget = new Widgets.Lesson (text_arr, chars_map);
                 lesson_widget.end_task.connect ((accuracy, speed, errors_hash) => {
                     lesson_widget = null;
+                    key_release_event.disconnect (on_key_release);
                 });
 
                 add_main_widget (lesson_widget);
+                key_release_event.connect (on_key_release);
             }
+        }
+
+        private bool on_key_release (Gdk.EventKey event) {
+            if (event.length > 0 && lesson_widget != null) {
+                lesson_widget.key_press_ev (event);
+            }
+
+            return true;
         }
     }
 }

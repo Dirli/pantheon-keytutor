@@ -83,7 +83,7 @@ namespace KeyTutor {
 
             return gen_lesson;
         }
-chars_map
+
         public void generate_keys_map () {
             keys_map.clear ();
             lessons_list = {};

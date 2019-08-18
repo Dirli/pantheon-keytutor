@@ -6,6 +6,21 @@ namespace KeyTutor.Widgets {
         private int iter_inc;
         private uint16 total_chars = 0;
         private string[] text_arr;
+        private bool _timer_run = false;
+
+        public bool timer_run {
+            get {
+                return _timer_run;
+            }
+            set {
+                _timer_run = value;
+                if (value) {
+                    timer_service.start_timer ();
+                } else {
+                    timer_service.stop_timer ();
+                }
+            }
+        }
 
         private Widgets.Info time_widget;
         private Widgets.Info accuracy_widget;
@@ -19,7 +34,9 @@ namespace KeyTutor.Widgets {
         private Gtk.TextIter iter_str_next;
 
         ~Lesson () {
-            timer_service.stop_timer ();
+            if (timer_run) {
+                timer_service.stop_timer ();
+            }
         }
 
         public Lesson (string[] lesson_task, Gee.HashMap<string, uint16> chars_map) {
@@ -84,6 +101,59 @@ namespace KeyTutor.Widgets {
             ++iter_inc;
             text_buf.get_iter_at_line_offset (out iter_str_next, 0, iter_inc);
             text_buf.apply_tag_by_name ("green_background", iter_str, iter_str_next);
+        }
+
+        private string? get_next_str () {
+            if (arr_offset < text_arr.length) {
+                arr_offset++;
+                return text_arr[arr_offset];
+            } else {
+                return null;
+            }
+        }
+
+        public void key_press_ev (Gdk.EventKey event) {
+            text_buf.remove_tag_by_name ("green_background", iter_str, iter_str_next);
+
+            total_chars++;
+
+            if (!timer_run) {
+                timer_run = true;
+            }
+
+            string tag_name;
+            var expected_char = iter_str.get_char ().to_string ();
+
+            if (expected_char == event.str) {
+                tag_name = "correct_in";
+            } else {
+                tag_name = "uncorrect_in";
+                accuracy_service.add_err ();
+            }
+
+            text_buf.apply_tag_by_name (
+                tag_name,
+                iter_str,
+                iter_str_next
+            );
+
+            offset_line ();
+
+            accuracy_widget.set_new_val ("%.1f %%".printf (accuracy_service.get_accuracy (total_chars)));
+
+            if (iter_inc > iter_str_next.get_line_offset ()) {
+                string? new_str = get_next_str ();
+                if (null != new_str) {
+                    iter_inc = 0;
+                    text_buf.set_text (new_str);
+                    offset_line ();
+                } else {
+                    timer_run = false;
+                    end_task (accuracy_service.get_accuracy (total_chars),
+                              (uint16) (60 * total_chars / timer_service.get_full_time ()));
+                    return;
+                 }
+            }
         }
     }
 }
