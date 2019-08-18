@@ -12,6 +12,13 @@ add_global_arguments(
     language:'c'
 )
 
+asresources = gnome.compile_resources(
+    'as-resources',
+    join_paths('data', meson.project_name() + '.gresource.xml'),
+    source_dir: 'data',
+    c_name: 'as'
+)
+
 dep_gtk3 = dependency('gtk+-3.0')
 dep_granite = dependency('granite')
 dep_json = dependency('json-glib-1.0')

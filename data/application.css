@@ -1,0 +1,42 @@
+.box {
+    border: 0.5px solid;
+    border-radius: 0.5em;
+    padding: 0.5em;
+    opacity: 0.9;
+    font-weight: bold;
+}
+.key-cur {
+    background-color: LightSeaGreen;
+}
+
+.passed-box {
+    border: 0.5px solid;
+}
+
+.failed-box {
+    border: 0.5px solid;
+    border-radius: 0.5em;
+    padding: 0.5em;
+    opacity: 0.9;
+    font-weight: bold;
+    background-color: Red;
+}
+
+.text {
+    font-family: monospace;
+    font-size: 26px;
+}
+
+.lessons-list {
+    font-size: 18px;
+}
+
+.info {
+    border: 0.5px solid;
+    background-color: initial;
+    border-radius: 0.3em;
+    padding: 0.5em;
+    opacity: 0.9;
+    font-size: 26px;
+    font-weight: normal;
+}
