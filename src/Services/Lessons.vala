@@ -25,17 +25,6 @@ namespace KeyTutor {
             return keys_map;
         }
 
-        public Gee.HashMap<string, uint16> get_chars_map () {
-            var chars_map = new Gee.HashMap<string, uint16> ();
-
-            keys_map.foreach ((k_entry) => {
-                chars_map[k_entry.value] = k_entry.key;
-                return true;
-            });
-
-            return chars_map;
-        }
-
         public string[] generate_lesson (uint8 lesson_level) {
             var let_occurrences = "";
             if (lessons_list.length > lesson_level) {
@@ -84,7 +73,11 @@ namespace KeyTutor {
             return gen_lesson;
         }
 
-        public void generate_keys_map () {
+        // init common chars_map
+        public Gee.HashMap<string, uint16> generate_keys_map () {
+            Gee.HashMap<string, uint16> chars_map = new Gee.HashMap<string, uint16> ();
+            chars_map[" "] = 65;
+
             keys_map.clear ();
             lessons_list = {};
 
@@ -95,20 +88,26 @@ namespace KeyTutor {
                 Json.Array letters_list = locale_object.get_array_member ("letters");
                 letters_list.foreach_element ((letters_list, index, elem) => {
                     var letter_iter = elem.get_object ();
-                    if (letter_iter.get_string_member ("letter") != "|") {
+                    var key_name = letter_iter.get_string_member ("letter");
+                    if (key_name != "|") {
+                        uint16 key_code = (uint16) letter_iter.get_int_member ("keycode");
+
+                        chars_map[key_name] = key_code;
 
                         if (letter_iter.has_member ("widget") && letter_iter.get_boolean_member ("widget")) {
-                            uint16 key_code = (uint16) letter_iter.get_int_member ("keycode");
-                            keys_map[key_code] = letter_iter.get_string_member ("letter");
+                            keys_map[key_code] = key_name;
                         }
                     }
                 });
+
 
                 Json.Object lessons_object = locale_object.get_object_member ("lessons");
                 for (uint i = 0; i < lessons_object.get_size (); i++) {
                     lessons_list += lessons_object.get_string_member (i.to_string ());
                 }
             }
+
+            return chars_map;
         }
 
         //will read from json-files

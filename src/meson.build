@@ -8,8 +8,10 @@ executable(
     'Widgets/CustomBox.vala',
     'Widgets/Header.vala',
     'Widgets/Info.vala',
+    'Widgets/Keyboard.vala',
     'Widgets/Lessons.vala',
     'Widgets/Lesson.vala',
+    'Widgets/SimpleKey.vala',
     'Widgets/Welcome.vala',
     asresources,
     dependencies: [

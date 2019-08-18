@@ -22,6 +22,7 @@ namespace KeyTutor.Widgets {
             }
         }
 
+        private Widgets.Keyboard keyboard_widget;
         private Widgets.Info time_widget;
         private Widgets.Info accuracy_widget;
         private Widgets.Info speed_widget;
@@ -32,6 +33,8 @@ namespace KeyTutor.Widgets {
         private Gtk.TextBuffer text_buf;
         private Gtk.TextIter iter_str;
         private Gtk.TextIter iter_str_next;
+
+        private Gee.HashMap<string, uint16> chars_map;
 
         ~Lesson () {
             if (timer_run) {
@@ -48,6 +51,8 @@ namespace KeyTutor.Widgets {
 
             arr_offset = 0;
             iter_inc = 0;
+
+            this.chars_map = chars_map;
 
             time_widget = new Widgets.Info ("Time");
             speed_widget = new Widgets.Info ("Speed");
@@ -92,8 +97,12 @@ namespace KeyTutor.Widgets {
 
             offset_line ();
 
+            keyboard_widget = new Widgets.Keyboard (Services.Lessons.get_default ().get_keys_map ());
+            keyboard_widget.select_press_btn (this.chars_map[iter_str.get_char ().to_string ()]);
+
             pack_start (info_box, true, true, 0);
             pack_start (text_widget, true, true, 0);
+            pack_start (keyboard_widget, true, true, 0);
         }
 
         private void offset_line () {
@@ -120,6 +129,8 @@ namespace KeyTutor.Widgets {
             if (!timer_run) {
                 timer_run = true;
             }
+
+            keyboard_widget.unselect_release_btn (chars_map[iter_str.get_char ().to_string ()]);
 
             string tag_name;
             var expected_char = iter_str.get_char ().to_string ();
@@ -154,6 +165,8 @@ namespace KeyTutor.Widgets {
                     return;
                  }
             }
+
+            keyboard_widget.select_press_btn (chars_map[iter_str.get_char ().to_string ()]);
         }
     }
 }

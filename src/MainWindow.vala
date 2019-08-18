@@ -20,8 +20,7 @@ namespace KeyTutor {
             Gtk.StyleContext.add_provider_for_screen (Gdk.Screen.get_default (), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
 
             lessons_manager = Services.Lessons.get_default ();
-            lessons_manager.generate_keys_map ();
-            chars_map = lessons_manager.get_chars_map ();
+            chars_map = lessons_manager.generate_keys_map ();
 
             header_bar = new Widgets.Header ();
             header_bar.nav_clicked.connect (on_nav_clicked);
