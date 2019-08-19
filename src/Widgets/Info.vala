@@ -3,12 +3,12 @@ namespace KeyTutor {
 
         private Gtk.Label info_val;
 
-        public Info (string head_name) {
+        public Info (string head_name, string style_name = "info") {
             Object (orientation: Gtk.Orientation.VERTICAL);
             spacing = 10;
             halign = Gtk.Align.CENTER;
 
-            get_style_context ().add_class ("info");
+            get_style_context ().add_class (style_name);
 
             Gtk.Label info_label = new Gtk.Label (head_name);
             info_val = new Gtk.Label ("");

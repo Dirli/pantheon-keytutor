@@ -90,9 +90,37 @@ namespace KeyTutor {
 
             if (text_arr != null && text_arr.length > 0) {
                 lesson_widget = new Widgets.Lesson (text_arr, chars_map);
-                lesson_widget.end_task.connect ((accuracy, speed, errors_hash) => {
+                lesson_widget.end_task.connect ((accuracy, speed) => {
                     lesson_widget = null;
                     key_release_event.disconnect (on_key_release);
+                    // write rules for passing
+                    var result_widget = new Widgets.Result (accuracy, speed, true, true);
+
+                    bool passed_level = true;
+
+                    passed_level = (passed_level && index < (lessons_manager.get_lessons_length () - 1));
+
+                    result_widget.activate_man_btns (index > 0, passed_level);
+
+                    add_main_widget (result_widget);
+                    result_widget.clicked_ev.connect ((ev_name) => {
+                        switch (ev_name) {
+                            case "next":
+                                if (passed_level) {
+                                    on_run_lesson (index + 1, course_name);
+                                }
+                                break;
+                            case "previous":
+                                if (index > 0) {
+                                    index -= 1;
+                                }
+                                on_run_lesson (index, course_name);
+                                break;
+                            case "repeat":
+                                on_run_lesson (index, course_name);
+                                break;
+                        }
+                    });
                 });
 
                 add_main_widget (lesson_widget);

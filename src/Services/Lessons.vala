@@ -17,7 +17,7 @@ namespace KeyTutor {
             keys_map = new Gee.HashMap<uint16, string> ();
         }
 
-        public int lessons_length () {
+        public int get_lessons_length () {
             return lessons_list.length;
         }
 
