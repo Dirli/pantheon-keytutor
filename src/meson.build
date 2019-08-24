@@ -3,6 +3,7 @@ executable(
     'Application.vala',
     'MainWindow.vala',
     'Services/Accuracy.vala',
+    'Services/DBManager.vala',
     'Services/Lessons.vala',
     'Services/Timer.vala',
     'Widgets/CustomBox.vala',
@@ -19,7 +20,8 @@ executable(
     dependencies: [
         dep_gtk3,
         dep_granite,
-        dep_json
+        dep_json,
+        dep_sqlite
     ],
     install : true
 )

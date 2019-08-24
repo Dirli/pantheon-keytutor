@@ -5,6 +5,7 @@ namespace KeyTutor {
         private Widgets.Header header_bar;
         private Widgets.Lesson? lesson_widget;
 
+        private Services.DBManager db_conn;
         private Services.Lessons lessons_manager;
 
         private Gee.HashMap<string, uint16> chars_map;
@@ -18,6 +19,8 @@ namespace KeyTutor {
             Gtk.CssProvider provider = new Gtk.CssProvider();
             provider.load_from_resource ("/io/elementary/keytutor/application.css");
             Gtk.StyleContext.add_provider_for_screen (Gdk.Screen.get_default (), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
+
+            db_conn = Services.DBManager.get_default ();
 
             lessons_manager = Services.Lessons.get_default ();
             chars_map = lessons_manager.generate_keys_map ();
