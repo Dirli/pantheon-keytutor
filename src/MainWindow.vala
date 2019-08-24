@@ -102,13 +102,19 @@ namespace KeyTutor {
                     lesson_widget = null;
                     key_release_event.disconnect (on_key_release);
                     // write rules for passing
-                    var result_widget = new Widgets.Result (accuracy, speed, true, true);
+                    bool accuracy_state = accuracy > 90;
+                    bool speed_state = speed > 120;
+                    var result_widget = new Widgets.Result (accuracy, speed, accuracy_state, speed_state);
 
-                    bool passed_level = true;
-
-                    passed_level = (passed_level && index < (lessons_manager.get_lessons_length () - 1));
+                    bool passed_level = (index < (lessons_manager.get_lessons_length () - 1)
+                                         && accuracy_state
+                                         && speed_state);
 
                     result_widget.activate_man_btns (index > 0, passed_level);
+
+                    if (passed_level && course_name == "letters" && db_conn.get_level (locale) == index) {
+                        db_conn.level_up (locale);
+                    }
 
                     add_main_widget (result_widget);
                     result_widget.clicked_ev.connect ((ev_name) => {
