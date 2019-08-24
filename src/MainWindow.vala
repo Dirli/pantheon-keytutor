@@ -10,6 +10,8 @@ namespace KeyTutor {
 
         private Gee.HashMap<string, uint16> chars_map;
 
+        private string locale;
+
         public MainWindow (KeyTutorApp app) {
             set_application (app);
             window_position = Gtk.WindowPosition.CENTER;
@@ -21,6 +23,8 @@ namespace KeyTutor {
             Gtk.StyleContext.add_provider_for_screen (Gdk.Screen.get_default (), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
 
             db_conn = Services.DBManager.get_default ();
+
+            locale = "en";
 
             lessons_manager = Services.Lessons.get_default ();
             chars_map = lessons_manager.generate_keys_map ();
@@ -64,7 +68,8 @@ namespace KeyTutor {
         private void on_welcome_activate (int index) {
             switch (index) {
                 case 0:
-                    var lessons_widget = new Widgets.Lessons (lessons_manager.get_lessons_list ());
+                    var lessons_widget = new Widgets.Lessons (lessons_manager.get_lessons_list (),
+                                                              db_conn.get_level (locale));
                     lessons_widget.run_lesson.connect ((index, name) => {
                         on_run_lesson (index, name);
                         header_bar.show_nav_btn (true);

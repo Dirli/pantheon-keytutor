@@ -2,18 +2,20 @@ namespace KeyTutor {
     public class Widgets.Lessons : CustomBox {
         public signal void run_lesson (uint8 les_index, string stack_child_name);
 
-        public Lessons (string[] lessons_list) {
+        public Lessons (string[] lessons_list, uint8? level) {
             margin_top = margin_bottom = 30;
 
             Gtk.ListBox letter_lessons = new Gtk.ListBox ();
             letter_lessons.selection_mode = Gtk.SelectionMode.BROWSE;
+
+            var lesson_level = level != null ? level : 0;
 
             string[] lesson_name;
             string lesson_str;
             for (uint8 i = 0; i < lessons_list.length; i++) {
                 lesson_name = lessons_list[i].split ("|");
                 lesson_str = @"$(lesson_name[0]) " + _("and") + @" $(lesson_name[1])";
-                letter_lessons.add (new LayoutRow (lesson_str, i));
+                letter_lessons.add (new LayoutRow (lesson_str, i, lesson_level < i));
             }
 
             Gtk.Stack tasks_stack = new Gtk.Stack ();
@@ -55,15 +57,23 @@ namespace KeyTutor {
 
     private class LayoutRow : Gtk.ListBoxRow {
         public uint8 lessson_index;
-        public LayoutRow (string les_name, uint8 les_index) {
+        public LayoutRow (string les_name, uint8 les_index, bool lock_row = false) {
             lessson_index = les_index;
             Gtk.Label row_label = new Gtk.Label (les_name);
+
 
             var row_box = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 10);
             row_box.margin_start = row_box.margin_end = 12;
             row_box.margin_top = row_box.margin_bottom = 6;
 
             row_box.add (row_label);
+
+            if (lock_row) {
+                sensitive = false;
+                var row_icon = new Gtk.Image.from_icon_name ("system-lock-screen-symbolic", Gtk.IconSize.SMALL_TOOLBAR);
+                row_box.add (row_icon);
+            }
+
             add (row_box);
         }
     }
