@@ -8,20 +8,25 @@ executable(
     'Services/Timer.vala',
     'Widgets/CustomBox.vala',
     'Widgets/CustomButton.vala',
+    'Widgets/CustomMButton.vala',
+    'Widgets/Graphic.vala',
     'Widgets/Header.vala',
     'Widgets/Info.vala',
     'Widgets/Keyboard.vala',
     'Widgets/Lessons.vala',
     'Widgets/Lesson.vala',
+    'Widgets/Progress.vala',
     'Widgets/Result.vala',
     'Widgets/SimpleKey.vala',
+    'Widgets/Statistic.vala',
     'Widgets/Welcome.vala',
     asresources,
     dependencies: [
         dep_gtk3,
         dep_granite,
         dep_json,
-        dep_sqlite
+        dep_sqlite,
+        meson.get_compiler('c').find_library('m', required : false)
     ],
     install : true
 )

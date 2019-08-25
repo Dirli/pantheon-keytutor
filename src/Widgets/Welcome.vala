@@ -7,6 +7,7 @@ namespace KeyTutor {
         public Welcome () {
             welcome = new Granite.Widgets.Welcome (_("Keyboard tutor"), _("Trains typing skills on the keyboard."));
             welcome.append ("media-playback-start", "Run exercise", "Start improving your skills");
+            welcome.append ("keytutor-graphic", "Show statistic", "Here you can follow your progress.");
 
             welcome.activated.connect ((index) => {
                 var exist_widget = get_child_at (2, 0);

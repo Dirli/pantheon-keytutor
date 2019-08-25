@@ -3,4 +3,7 @@
     <gresource prefix="/io/elementary/keytutor">
         <file alias="application.css" compressed="true">application.css</file>
     </gresource>
+    <gresource prefix="/io/elementary/keytutor/icons">
+        <file compressed="true" preprocess="xml-stripblanks">keytutor-graphic.svg</file>
+    </gresource>
 </gresources>

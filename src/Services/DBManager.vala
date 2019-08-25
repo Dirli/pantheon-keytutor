@@ -119,11 +119,11 @@ namespace KeyTutor {
             return loc_level;
         }
 
-        public void add_result_iter (string locale,
-                                     string les_type,
-                                     uint8  les_level,
-                                     uint16 speed,
-                                     double accuracy) {
+        public void add_lesson_result (string locale,
+                                       string les_type,
+                                       uint8 les_level,
+                                       uint16 speed,
+                                       double accuracy) {
             Sqlite.Statement stmt;
 
             int res = db.prepare_v2 ("INSERT INTO Results (locale, type, level, speed, accuracy) VALUES (?, ?, ?, ?, ?)", -1, out stmt);

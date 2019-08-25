@@ -22,6 +22,8 @@ namespace KeyTutor {
             provider.load_from_resource ("/io/elementary/keytutor/application.css");
             Gtk.StyleContext.add_provider_for_screen (Gdk.Screen.get_default (), provider, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
 
+            Gtk.IconTheme.get_default().add_resource_path("/io/elementary/keytutor/icons");
+
             db_conn = Services.DBManager.get_default ();
 
             locale = "en";
@@ -77,7 +79,15 @@ namespace KeyTutor {
 
                     welcome_widget.attach (lessons_widget, 2, 0);
                     break;
+                case 1:
+                    show_statistic ();
+                    break;
             }
+        }
+
+        private void show_statistic (uint8 level_index = 0, string course_name = "letters") {
+            var stats_widget = new Widgets.Statistic (locale, level_index, course_name);
+            add_main_widget (stats_widget);
         }
 
         private void on_nav_clicked () {
@@ -117,6 +127,9 @@ namespace KeyTutor {
                     }
 
                     add_main_widget (result_widget);
+
+                    db_conn.add_lesson_result (locale, course_name, index, speed, accuracy);
+
                     result_widget.clicked_ev.connect ((ev_name) => {
                         switch (ev_name) {
                             case "next":
@@ -132,6 +145,9 @@ namespace KeyTutor {
                                 break;
                             case "repeat":
                                 on_run_lesson (index, course_name);
+                                break;
+                            case "statistic":
+                                show_statistic (index, course_name);
                                 break;
                         }
                     });
