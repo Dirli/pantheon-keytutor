@@ -98,36 +98,24 @@ namespace KeyTutor {
             Sqlite.Statement stmt;
             if (level == null) {
                 level = get_level (locale);
-                if (level != null) {++level;}
+                ++level;
             }
-            if (level != null) {
-                int res = db.prepare_v2 ("UPDATE Levels SET level=? WHERE locale=?", -1, out stmt);
-                assert (res == Sqlite.OK);
 
-                res = stmt.bind_int (1, (int) (level));
-                assert (res == Sqlite.OK);
-                res = stmt.bind_text (2, locale);
-                assert (res == Sqlite.OK);
+            int res = db.prepare_v2 ("UPDATE Levels SET level=? WHERE locale=?", -1, out stmt);
+            assert (res == Sqlite.OK);
 
-                res = stmt.step ();
-                if (res != Sqlite.DONE) {
-                    warning ("error when update level");
-                }
-            } else {
-                int res = db.prepare_v2 ("INSERT INTO Levels (locale)  VALUES (?)", -1, out stmt);
-                assert (res == Sqlite.OK);
+            res = stmt.bind_int (1, (int) (level));
+            assert (res == Sqlite.OK);
+            res = stmt.bind_text (2, locale);
+            assert (res == Sqlite.OK);
 
-                res = stmt.bind_text (1, locale);
-                assert (res == Sqlite.OK);
-
-                res = stmt.step ();
-                if (res != Sqlite.DONE) {
-                    warning ("error when insert data");
-                }
+            res = stmt.step ();
+            if (res != Sqlite.DONE) {
+                warning ("error when update level");
             }
         }
 
-        public uint8? get_level (string locale) {
+        public uint8 get_level (string locale) {
             Sqlite.Statement stmt;
 
             int res = db.prepare_v2 ("SELECT level FROM Levels WHERE locale=?", -1, out stmt);
@@ -136,10 +124,22 @@ namespace KeyTutor {
             res = stmt.bind_text (1, locale);
             assert (res == Sqlite.OK);
 
-            uint8? loc_level = null;
+            uint8 loc_level = 0;
 
             if (stmt.step () == Sqlite.ROW) {
                 loc_level = (uint8) stmt.column_int (0);
+            } else {
+                stmt.reset ();
+                res = db.prepare_v2 ("INSERT INTO Levels (locale)  VALUES (?)", -1, out stmt);
+                assert (res == Sqlite.OK);
+
+                res = stmt.bind_text (1, locale);
+                assert (res == Sqlite.OK);
+
+                res = stmt.step ();
+                if (res != Sqlite.DONE) {
+                    warning ("error when init level");
+                }
             }
 
             return loc_level;

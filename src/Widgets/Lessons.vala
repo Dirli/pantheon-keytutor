@@ -8,14 +8,12 @@ namespace KeyTutor {
             Gtk.ListBox letter_lessons = new Gtk.ListBox ();
             letter_lessons.selection_mode = Gtk.SelectionMode.BROWSE;
 
-            var lesson_level = level != null ? level : 0;
-
             string[] lesson_name;
             string lesson_str;
             for (uint8 i = 0; i < lessons_list.length; i++) {
                 lesson_name = lessons_list[i].split ("|");
                 lesson_str = @"$(lesson_name[0]) " + _("and") + @" $(lesson_name[1])";
-                letter_lessons.add (new LayoutRow (lesson_str, i, lesson_level < i));
+                letter_lessons.add (new LayoutRow (lesson_str, i, level < i));
             }
 
             Gtk.Stack tasks_stack = new Gtk.Stack ();

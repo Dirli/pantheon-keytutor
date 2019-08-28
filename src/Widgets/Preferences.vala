@@ -14,6 +14,8 @@ namespace KeyTutor {
 
             var settings = Services.Settings.get_default ();
 
+            var data_path = "/usr/share/io.elementary.keytutor/layout/";
+
             //Create UI
             var layout = new Gtk.Grid ();
             layout.valign = Gtk.Align.CENTER;
@@ -27,8 +29,24 @@ namespace KeyTutor {
             var locales_exist = new Gtk.ComboBoxText ();
             locales_exist.halign = Gtk.Align.START;
 
+            Json.Parser parser = new Json.Parser ();
+            string locale_name;
             foreach (var locale in locales_list) {
-                locales_exist.append (locale, locale);
+                locale_name = locale;
+                try {
+                    parser.load_from_file (data_path + @"$locale.json");
+                    Json.Node node = parser.get_root ();
+
+                    if (node.get_node_type () == Json.NodeType.OBJECT) {
+                        var obj = node.get_object ();
+                        locale_name = obj.get_string_member ("name");
+                    }
+
+                } catch (Error e) {
+                    warning (e.message);
+                }
+
+                locales_exist.append (locale, locale_name);
             }
 
             settings.bind("locale", locales_exist, "active_id", SettingsBindFlags.DEFAULT);

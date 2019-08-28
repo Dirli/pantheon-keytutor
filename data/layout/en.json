@@ -1,4 +1,5 @@
 {
+    "name": "English",
     "letters" : [
         { "letter": "A", "keycode": 38, "widget": true},
         { "letter": "a", "keycode": 38, "finger": 1},
