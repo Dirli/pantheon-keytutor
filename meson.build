@@ -25,3 +25,6 @@ dep_json = dependency('json-glib-1.0')
 dep_sqlite = dependency('sqlite3')
 
 subdir ('src')
+subdir ('data')
+
+meson.add_install_script('meson/post_install.py')

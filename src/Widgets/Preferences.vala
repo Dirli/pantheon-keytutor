@@ -10,8 +10,9 @@ namespace KeyTutor {
             transient_for = window;
             modal = true;
             title = "Preferences";
-
             set_default_size (300, 150);
+
+            var settings = Services.Settings.get_default ();
 
             //Create UI
             var layout = new Gtk.Grid ();
@@ -30,13 +31,12 @@ namespace KeyTutor {
                 locales_exist.append (locale, locale);
             }
 
-            // settings.bind("locale", locales_exist, "active_id", SettingsBindFlags.DEFAULT);
-            locales_exist.set_active_id ("en");
+            settings.bind("locale", locales_exist, "active_id", SettingsBindFlags.DEFAULT);
 
             Gtk.Label accuracy_label = new Gtk.Label (_("Accuracy:"));
             accuracy_label.halign = Gtk.Align.END;
             var accuracy_val = new Gtk.SpinButton.with_range (60, 100, 1);
-            // settings.bind("accuracy", accuracy_val, "value", SettingsBindFlags.DEFAULT);
+            settings.bind("accuracy", accuracy_val, "value", SettingsBindFlags.DEFAULT);
             accuracy_val.set_halign (Gtk.Align.START);
             accuracy_val.set_width_chars (3);
             accuracy_val.value_changed.connect (on_value_changed);
@@ -44,7 +44,7 @@ namespace KeyTutor {
             Gtk.Label speed_label = new Gtk.Label (_("Speed:"));
             speed_label.halign = Gtk.Align.END;
             var speed_val = new Gtk.SpinButton.with_range (60, 200, 1);
-            // settings.bind("speed", speed_val, "value", SettingsBindFlags.DEFAULT);
+            settings.bind("speed", speed_val, "value", SettingsBindFlags.DEFAULT);
             speed_val.set_halign (Gtk.Align.START);
             speed_val.set_width_chars (3);
             speed_val.value_changed.connect (on_value_changed);
@@ -57,8 +57,7 @@ namespace KeyTutor {
             new_str_btn.append_text ("Auto");
             new_str_btn.append_text ("Space");
             new_str_btn.append_text ("Enter");
-            new_str_btn.selected = 0;
-            // settings.bind("new-string", new_str_btn, "selected", SettingsBindFlags.DEFAULT);
+            settings.bind("new-line", new_str_btn, "selected", SettingsBindFlags.DEFAULT);
 
             layout.attach (locales_label,  0, 0);
             layout.attach (locales_exist,  1, 0);

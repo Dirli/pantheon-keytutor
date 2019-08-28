@@ -7,7 +7,9 @@ namespace KeyTutor {
 
         private Services.DBManager db_conn;
         private Services.Lessons lessons_manager;
+        private GLib.Settings settings;
 
+        private string[] locales_list;
         private string _locale;
         private string locale {
             get {
@@ -18,7 +20,6 @@ namespace KeyTutor {
                 lessons_manager.generate_keys_map (_locale);
             }
         }
-        private string[] locales_list;
 
         public MainWindow (KeyTutorApp app) {
             set_application (app);
@@ -32,7 +33,9 @@ namespace KeyTutor {
 
             Gtk.IconTheme.get_default().add_resource_path("/io/elementary/keytutor/icons");
 
+            settings = Services.Settings.get_default ();
             db_conn = Services.DBManager.get_default ();
+            lessons_manager = Services.Lessons.get_default ();
 
             locales_list = {};
 
@@ -49,8 +52,9 @@ namespace KeyTutor {
                 //
             }
 
-            lessons_manager = Services.Lessons.get_default ();
-            locale = "en";
+            if (!(settings.get_string ("locale") in locales_list)) {
+                settings.set_string ("locale", "en");
+            }
 
             header_bar = new Widgets.Header ();
             header_bar.nav_clicked.connect (on_nav_clicked);
@@ -62,12 +66,20 @@ namespace KeyTutor {
             view.expand = true;
             view.halign = view.valign = Gtk.Align.FILL;
 
-            init_welcome ();
+            on_locale_change ();
             add (view);
+
             GLib.Idle.add (() => {
                 header_bar.show_nav_btn (false);
                 return false;
             });
+
+            settings.changed["locale"].connect (on_locale_change);
+        }
+
+        private void on_locale_change () {
+            locale = settings.get_string ("locale");
+            init_welcome ();
         }
 
         private void add_main_widget (Gtk.Widget new_widget) {
@@ -125,10 +137,8 @@ namespace KeyTutor {
                 case "preferences":
                     var preferences = new KeyTutor.Widgets.Preferences (this, locales_list);
                     preferences.change_level.connect (() => {
-                        // var new_speed = settings.get_int ("speed");
-                        var new_speed = 150;
-                        // var new_accuracy = settings.get_int ("accuracy");
-                        var new_accuracy = 90;
+                        var new_speed = settings.get_int ("speed");
+                        var new_accuracy = settings.get_int ("accuracy");
                         db_conn.level_reload (locale, new_speed, new_accuracy);
                         init_welcome ();
                         preferences.destroy ();
@@ -158,10 +168,8 @@ namespace KeyTutor {
                     lesson_widget = null;
                     key_release_event.disconnect (on_key_release);
                     // write rules for passing
-                    // bool accuracy_state = accuracy > settings.get_int ("accuracy");
-                    bool accuracy_state = accuracy > 90;
-                    // bool speed_state = speed > settings.get_int ("speed");
-                    bool speed_state = speed > 120;
+                    bool accuracy_state = accuracy > settings.get_int ("accuracy");
+                    bool speed_state = speed > settings.get_int ("speed");
                     var result_widget = new Widgets.Result (accuracy, speed, accuracy_state, speed_state);
 
                     bool passed_level = (index < (lessons_manager.get_lessons_length () - 1)

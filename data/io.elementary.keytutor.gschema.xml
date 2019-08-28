@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+    <schema path="/io/elementary/keytutor/" id="io.elementary.keytutor">
+        <key type="s" name="locale">
+            <default>"en"</default>
+            <summary>Selected locale</summary>
+            <description>Selected locale</description>
+        </key>
+        <key type="i" name="new-line">
+            <default>0</default>
+            <summary>Newline conditions</summary>
+            <description>Newline conditions</description>
+        </key>
+        <key type="i" name="speed">
+            <default>100</default>
+            <summary>Speed ​​value</summary>
+            <description>Speed ​​value for the task (characters per minute)</description>
+        </key>
+        <key type="i" name="accuracy">
+            <default>80</default>
+            <summary>Accuracy value</summary>
+            <description>The accuracy value for the task (in percent)</description>
+        </key>
+    </schema>
+</schemalist>

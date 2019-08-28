@@ -5,6 +5,7 @@ executable(
     'Services/Accuracy.vala',
     'Services/DBManager.vala',
     'Services/Lessons.vala',
+    'Services/Settings.vala',
     'Services/Timer.vala',
     'Widgets/CustomBox.vala',
     'Widgets/CustomButton.vala',
