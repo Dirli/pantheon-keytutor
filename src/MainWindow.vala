@@ -8,9 +8,17 @@ namespace KeyTutor {
         private Services.DBManager db_conn;
         private Services.Lessons lessons_manager;
 
-        private Gee.HashMap<string, uint16> chars_map;
-
-        private string locale;
+        private string _locale;
+        private string locale {
+            get {
+                return _locale;
+            }
+            set {
+                _locale = value;
+                lessons_manager.generate_keys_map (_locale);
+            }
+        }
+        private string[] locales_list;
 
         public MainWindow (KeyTutorApp app) {
             set_application (app);
@@ -26,13 +34,27 @@ namespace KeyTutor {
 
             db_conn = Services.DBManager.get_default ();
 
-            locale = "en";
+            locales_list = {};
+
+            try {
+                GLib.Dir dir = GLib.Dir.open ("/usr/share/io.elementary.keytutor/layout/", 0);
+                while ((name = dir.read_name ()) != null) {
+                    locales_list += name.split(".")[0];
+                }
+            } catch (Error e) {
+                warning (e.message);
+            }
+
+            if (!("en" in locales_list)) {
+                //
+            }
 
             lessons_manager = Services.Lessons.get_default ();
-            chars_map = lessons_manager.generate_keys_map ();
+            locale = "en";
 
             header_bar = new Widgets.Header ();
             header_bar.nav_clicked.connect (on_nav_clicked);
+            header_bar.menu_select.connect (on_menu_select);
 
             set_titlebar (header_bar);
 
@@ -60,6 +82,8 @@ namespace KeyTutor {
         }
 
         private void init_welcome () {
+            lesson_widget = null;
+
             welcome_widget = new Widgets.Welcome ();
             welcome_widget.welcome_activate.connect (on_welcome_activate);
 
@@ -91,10 +115,32 @@ namespace KeyTutor {
         }
 
         private void on_nav_clicked () {
-            lesson_widget = null;
             key_release_event.disconnect (on_key_release);
             init_welcome ();
             header_bar.show_nav_btn (false);
+        }
+
+        private void on_menu_select (string row_name) {
+            switch (row_name) {
+                case "preferences":
+                    var preferences = new KeyTutor.Widgets.Preferences (this, locales_list);
+                    preferences.change_level.connect (() => {
+                        // var new_speed = settings.get_int ("speed");
+                        var new_speed = 150;
+                        // var new_accuracy = settings.get_int ("accuracy");
+                        var new_accuracy = 90;
+                        db_conn.level_reload (locale, new_speed, new_accuracy);
+                        init_welcome ();
+                        preferences.destroy ();
+                    });
+                    preferences.run ();
+                    break;
+                case "about":
+                    // var about = new KeyTutor.Widgets.About ();
+                    // about.show ();
+                    break;
+
+            }
         }
 
         private void on_run_lesson (uint8 index, string course_name) {
@@ -107,12 +153,14 @@ namespace KeyTutor {
             }
 
             if (text_arr != null && text_arr.length > 0) {
-                lesson_widget = new Widgets.Lesson (text_arr, chars_map);
+                lesson_widget = new Widgets.Lesson (text_arr, lessons_manager.get_chars_map ());
                 lesson_widget.end_task.connect ((accuracy, speed) => {
                     lesson_widget = null;
                     key_release_event.disconnect (on_key_release);
                     // write rules for passing
+                    // bool accuracy_state = accuracy > settings.get_int ("accuracy");
                     bool accuracy_state = accuracy > 90;
+                    // bool speed_state = speed > settings.get_int ("speed");
                     bool speed_state = speed > 120;
                     var result_widget = new Widgets.Result (accuracy, speed, accuracy_state, speed_state);
 

@@ -71,14 +71,40 @@ namespace KeyTutor {
             open_database ();
         }
 
-        public void level_up (string locale) {
+        public void level_reload (string locale, int speed, int accuracy) {
             Sqlite.Statement stmt;
-            var cur_level = get_level (locale);
-            if (cur_level != null) {
+            int res = db.prepare_v2 ("SELECT level, MAX(speed), MAX(accuracy) FROM Results WHERE locale=? AND type=? GROUP BY level", -1, out stmt);
+            assert (res == Sqlite.OK);
+
+            res = stmt.bind_text (1, locale);
+            assert (res == Sqlite.OK);
+
+            res = stmt.bind_text (2, "letters");
+            assert (res == Sqlite.OK);
+
+            int new_level = 0;
+
+            while (stmt.step () == Sqlite.ROW) {
+                if (speed > stmt.column_int (1) || accuracy > stmt.column_double (2)) {
+                    break;
+                }
+                new_level = stmt.column_int (0);
+            }
+
+            level_up (locale, (uint8) new_level);
+        }
+
+        public void level_up (string locale, owned uint8? level = null) {
+            Sqlite.Statement stmt;
+            if (level == null) {
+                level = get_level (locale);
+                if (level != null) {++level;}
+            }
+            if (level != null) {
                 int res = db.prepare_v2 ("UPDATE Levels SET level=? WHERE locale=?", -1, out stmt);
                 assert (res == Sqlite.OK);
 
-                res = stmt.bind_int (1, (int) (cur_level + 1));
+                res = stmt.bind_int (1, (int) (level));
                 assert (res == Sqlite.OK);
                 res = stmt.bind_text (2, locale);
                 assert (res == Sqlite.OK);

@@ -1,6 +1,9 @@
 namespace KeyTutor {
     public class Services.Lessons : GLib.Object {
         private Gee.HashMap<uint16, string> keys_map;
+        private Gee.HashMap<string, uint16> chars_map;
+
+        private string data_path;
 
         private string[] lessons_list;
         public string[] get_lessons_list () {
@@ -14,7 +17,9 @@ namespace KeyTutor {
         }
 
         private Lessons () {
+            data_path = "/usr/share/io.elementary.keytutor/layout/";
             keys_map = new Gee.HashMap<uint16, string> ();
+            chars_map = new Gee.HashMap<string, uint16> ();
         }
 
         public int get_lessons_length () {
@@ -23,6 +28,10 @@ namespace KeyTutor {
 
         public Gee.HashMap<uint16, string> get_keys_map () {
             return keys_map;
+        }
+
+        public Gee.HashMap<string, uint16> get_chars_map () {
+            return chars_map;
         }
 
         public string[] generate_lesson (uint8 lesson_level) {
@@ -74,16 +83,14 @@ namespace KeyTutor {
         }
 
         // init common chars_map
-        public Gee.HashMap<string, uint16> generate_keys_map () {
-            Gee.HashMap<string, uint16> chars_map = new Gee.HashMap<string, uint16> ();
-            chars_map[" "] = 65;
-
+        public void generate_keys_map (string locale) {
             keys_map.clear ();
+            chars_map.clear ();
             lessons_list = {};
 
             init_common_btns ();
 
-            Json.Object? locale_object = get_json_object ();
+            Json.Object? locale_object = get_json_object (locale);
             if (locale_object != null) {
                 Json.Array letters_list = locale_object.get_array_member ("letters");
                 letters_list.foreach_element ((letters_list, index, elem) => {
@@ -106,103 +113,12 @@ namespace KeyTutor {
                     lessons_list += lessons_object.get_string_member (i.to_string ());
                 }
             }
-
-            return chars_map;
         }
 
-        //will read from json-files
-        private Json.Object? get_json_object () {
-            string data ="""
-                {
-                    "letters" : [
-                        { "letter": "A", "keycode": 38, "widget": true},
-                        { "letter": "a", "keycode": 38, "finger": 1},
-                        { "letter": "B", "keycode": 56, "widget": true},
-                        { "letter": "b", "keycode": 56, "finger": 4},
-                        { "letter": "C", "keycode": 54, "widget": true},
-                        { "letter": "c", "keycode": 54, "finger": 3},
-                        { "letter": "D", "keycode": 40, "widget": true},
-                        { "letter": "d", "keycode": 40, "finger": 3},
-                        { "letter": "E", "keycode": 26, "widget": true},
-                        { "letter": "e", "keycode": 26, "finger": 3},
-                        { "letter": "F", "keycode": 41, "widget": true},
-                        { "letter": "f", "keycode": 41, "finger": 4},
-                        { "letter": "G", "keycode": 42, "widget": true},
-                        { "letter": "g", "keycode": 42, "finger": 4},
-                        { "letter": "H", "keycode": 43, "widget": true},
-                        { "letter": "h", "keycode": 43, "finger": 5},
-                        { "letter": "I", "keycode": 31, "widget": true},
-                        { "letter": "i", "keycode": 31, "finger": 6},
-                        { "letter": "J", "keycode": 44, "widget": true},
-                        { "letter": "j", "keycode": 44, "finger": 5},
-                        { "letter": "K", "keycode": 45, "widget": true},
-                        { "letter": "k", "keycode": 45, "finger": 6},
-                        { "letter": "L", "keycode": 46, "widget": true},
-                        { "letter": "l", "keycode": 46, "finger": 7},
-                        { "letter": "M", "keycode": 58, "widget": true},
-                        { "letter": "m", "keycode": 58, "finger": 5},
-                        { "letter": "N", "keycode": 57, "widget": true},
-                        { "letter": "n", "keycode": 57, "finger": 5},
-                        { "letter": "O", "keycode": 32, "widget": true},
-                        { "letter": "o", "keycode": 32, "finger": 7},
-                        { "letter": "P", "keycode": 33, "widget": true},
-                        { "letter": "p", "keycode": 33, "finger": 8},
-                        { "letter": "Q", "keycode": 24, "widget": true},
-                        { "letter": "q", "keycode": 24, "finger": 1},
-                        { "letter": "R", "keycode": 27, "widget": true},
-                        { "letter": "r", "keycode": 27, "finger": 4},
-                        { "letter": "S", "keycode": 39, "widget": true},
-                        { "letter": "s", "keycode": 39, "finger": 2},
-                        { "letter": "T", "keycode": 28, "widget": true},
-                        { "letter": "t", "keycode": 28, "finger": 4},
-                        { "letter": "U", "keycode": 30, "widget": true},
-                        { "letter": "u", "keycode": 30, "finger": 5},
-                        { "letter": "V", "keycode": 55, "widget": true},
-                        { "letter": "v", "keycode": 55, "finger": 4},
-                        { "letter": "W", "keycode": 25, "widget": true},
-                        { "letter": "w", "keycode": 25, "finger": 2},
-                        { "letter": "X", "keycode": 53, "widget": true},
-                        { "letter": "x", "keycode": 53, "finger": 2},
-                        { "letter": "Y", "keycode": 29, "widget": true},
-                        { "letter": "y", "keycode": 29, "finger": 5},
-                        { "letter": "Z", "keycode": 52, "widget": true},
-                        { "letter": "z", "keycode": 52, "finger": 1},
-                        { "letter": "[", "keycode": 34, "finger": 8, "widget": true},
-                        { "letter": "{", "keycode": 34},
-                        { "letter": "]", "keycode": 35, "finger": 8, "widget": true},
-                        { "letter": "}", "keycode": 35},
-                        { "letter": ",", "keycode": 59, "finger": 6, "widget": true, "punctuation": true},
-                        { "letter": "<", "keycode": 59},
-                        { "letter": ".", "keycode": 60, "finger": 7, "widget": true, "punctuation": true},
-                        { "letter": ">", "keycode": 60},
-                        { "letter": "/", "keycode": 61, "finger": 8, "widget": true},
-                        { "letter": "?", "keycode": 61, "punctuation": true},
-                        { "letter": "\\", "keycode": 51, "finger": 8, "widget": true},
-                        { "letter": ";", "keycode": 47, "finger": 8, "widget": true, "punctuation": true},
-                        { "letter": ":", "keycode": 47, "finger": 8, "punctuation": true},
-                        { "letter": "'", "keycode": 48, "finger": 8, "widget": true, "punctuation": true}
-                    ],
-                    "lessons" : {
-                        "0": "f|j",
-                        "1": "d|k",
-                        "2": "s|l",
-                        "3": "a|p",
-                        "4": "r|u",
-                        "5": "e|i",
-                        "6": "w|o",
-                        "7": "q|z",
-                        "8": "x|c",
-                        "9": "v|m",
-                        "10": "g|h",
-                        "11": "b|n",
-                        "12": "t|y"
-                    }
-                }
-            """;
-
+        private Json.Object? get_json_object (string locale) {
             Json.Parser parser = new Json.Parser ();
             try {
-                parser.load_from_data (data);
+                parser.load_from_file (data_path + @"$locale.json");
                 Json.Node node = parser.get_root ();
 
                 if (node.get_node_type () == Json.NodeType.OBJECT) {
@@ -239,6 +155,7 @@ namespace KeyTutor {
              keys_map[37] = "Ctrl";
              keys_map[64] = "Alt";
              keys_map[65] = "Space";
+             chars_map[" "] = 65;
              keys_map[113] = "Alt";
              keys_map[105] = "Ctrl";
          }

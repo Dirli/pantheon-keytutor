@@ -15,6 +15,7 @@ executable(
     'Widgets/Keyboard.vala',
     'Widgets/Lessons.vala',
     'Widgets/Lesson.vala',
+    'Widgets/Preferences.vala',
     'Widgets/Progress.vala',
     'Widgets/Result.vala',
     'Widgets/SimpleKey.vala',
