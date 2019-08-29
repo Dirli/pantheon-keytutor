@@ -21,5 +21,10 @@
             <summary>Accuracy value</summary>
             <description>The accuracy value for the task (in percent)</description>
         </key>
+        <key type="b" name="correct-error">
+            <default>false</default>
+            <summary>Require error correction</summary>
+            <description>Require error correction</description>
+        </key>
     </schema>
 </schemalist>

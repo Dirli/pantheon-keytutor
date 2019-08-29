@@ -1,6 +1,7 @@
 namespace KeyTutor {
     public class Widgets.Preferences : Gtk.Dialog {
         public signal void change_level ();
+        public signal void clear_history ();
 
         private bool changed_level = false;
 
@@ -77,6 +78,18 @@ namespace KeyTutor {
             new_str_btn.append_text ("Enter");
             settings.bind("new-line", new_str_btn, "selected", SettingsBindFlags.DEFAULT);
 
+            Gtk.Label errors_label = new Gtk.Label (_("Correction errors"));
+            errors_label.halign = Gtk.Align.END;
+            var errors_switch = new Gtk.Switch ();
+            errors_switch.tooltip_text = _("Require error correction");
+            errors_switch.halign = Gtk.Align.START;
+            settings.bind ("correct-error", errors_switch, "active", GLib.SettingsBindFlags.DEFAULT);
+
+            Gtk.Button history_button = new Gtk.Button.with_label (_("Clear history"));
+            history_button.clicked.connect (() => {
+                Services.DBManager.get_default ().reset_database ();
+            });
+
             layout.attach (locales_label,  0, 0);
             layout.attach (locales_exist,  1, 0);
             layout.attach (accuracy_label, 0, 1);
@@ -85,6 +98,8 @@ namespace KeyTutor {
             layout.attach (speed_val,      1, 2);
             layout.attach (new_str_label,  0, 3, 2, 1);
             layout.attach (new_str_btn,    0, 4, 2, 1);
+            layout.attach (errors_label,   0, 5);
+            layout.attach (errors_switch,  1, 5);
 
             Gtk.Box content = this.get_content_area () as Gtk.Box;
             content.valign = Gtk.Align.START;
@@ -92,6 +107,8 @@ namespace KeyTutor {
             content.add (layout);
 
             //Actions
+            var clear_button = add_button (_("Clear"), 1);
+            clear_button.tooltip_text = _("Attention, the whole story will be cleared!");
             add_button (_("Close"), Gtk.ResponseType.CLOSE);
             response.connect ((source, response_id) => {
                 switch (response_id) {
@@ -103,6 +120,10 @@ namespace KeyTutor {
                         }
 
                         break;
+                    case 1:
+                        clear_history ();
+                        break;
+
                 }
             });
             show_all ();

@@ -38,7 +38,7 @@ namespace KeyTutor {
             q = """CREATE TABLE IF NOT EXISTS Levels (
                 ID          INTEGER     PRIMARY KEY AUTOINCREMENT,
                 locale      TEXT        NOT NULL,
-                level       INTEGER     DEFAULT 1,
+                level       INTEGER     DEFAULT 0,
                 CONSTRAINT unique_level UNIQUE (locale)
                 );""";
 

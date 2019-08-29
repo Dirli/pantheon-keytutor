@@ -143,6 +143,10 @@ namespace KeyTutor {
                         init_welcome ();
                         preferences.destroy ();
                     });
+                    preferences.clear_history.connect (() => {
+                        db_conn.reset_database ();
+                        init_welcome ();
+                    });
                     preferences.run ();
                     break;
                 case "about":
@@ -211,8 +215,14 @@ namespace KeyTutor {
 
                 add_main_widget (lesson_widget);
                 key_release_event.connect (on_key_release);
+                // add pause on mouse click
+                // button_release_event.connect (on_button_release);
             }
         }
+
+        // private bool on_button_release () {
+        //     return true;
+        // }
 
         private bool on_key_release (Gdk.EventKey event) {
             if (event.length > 0 && lesson_widget != null) {
