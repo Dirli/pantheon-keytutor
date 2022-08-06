@@ -13,5 +13,9 @@ namespace KeyTutor {
         public void add_err () {
             error_chars++;
         }
+
+        public void reset () {
+            error_chars = 0;
+        }
     }
 }

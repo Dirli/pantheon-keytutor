@@ -10,13 +10,7 @@ namespace KeyTutor {
             return lessons_list;
         }
 
-        private static Lessons? instance = null;
-        public static Lessons get_default () {
-            if (instance == null) {instance = new Lessons ();}
-            return instance;
-        }
-
-        private Lessons () {
+        public Lessons () {
             data_path = "/usr/share/io.elementary.keytutor/layout/";
             keys_map = new Gee.HashMap<uint16, string> ();
             chars_map = new Gee.HashMap<string, uint16> ();

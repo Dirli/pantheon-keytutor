@@ -1,5 +1,5 @@
-namespace KeyTutor.Widgets {
-    public class Keyboard : Gtk.Box {
+namespace KeyTutor {
+    public class Widgets.Keyboard : Gtk.Box {
         private Gee.HashMap<uint16, SimpleKey> keys_map;
 
         public Keyboard (Gee.HashMap<uint16, string> k_map) {

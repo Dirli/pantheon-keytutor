@@ -1,26 +1,25 @@
 namespace KeyTutor {
     public class Widgets.Header : Gtk.HeaderBar {
-        public signal void nav_clicked ();
-        public signal void menu_select (string row_name);
+        public signal void back_clicked ();
+        public signal void show_preferences ();
 
         private Gtk.Button nav_button;
 
-        construct {
-            show_close_button = true;
-            has_subtitle = false;
-            title = "KeyTutor";
+        public Header () {
+            Object (show_close_button: true,
+                    has_subtitle: false,
+                    title: "KeyTutor");
         }
 
-        public Header () {
-            nav_button = new Gtk.Button ();
-            nav_button.can_focus = false;
-            nav_button.label = "back";
-            nav_button.valign = Gtk.Align.CENTER;
-            nav_button.vexpand = false;
-            nav_button.get_style_context ().add_class ("back-button");
+        construct {
+            nav_button = new Gtk.Button.with_label ("back") {
+                valign = Gtk.Align.CENTER,
+                can_focus = false,
+                vexpand = false
+            };
+            nav_button.get_style_context ().add_class (Granite.STYLE_CLASS_BACK_BUTTON);
             nav_button.clicked.connect (() => {
-                nav_button.hide ();
-                nav_clicked ();
+                back_clicked ();
             });
 
             //Create menu
@@ -29,11 +28,13 @@ namespace KeyTutor {
             var about_item = new Gtk.MenuItem.with_label (_("About"));
             menu.add (pref_item);
             menu.add (about_item);
+
             pref_item.activate.connect (() => {
-                menu_select ("preferences");
+                show_preferences ();
             });
             about_item.activate.connect (() => {
-                menu_select ("about");
+                // var about = new KeyTutor.Widgets.About ();
+                // about.show ();
             });
 
             var menu_button = new Gtk.MenuButton ();

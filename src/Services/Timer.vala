@@ -10,6 +10,8 @@ namespace KeyTutor {
         public Timer () {}
 
         public void start_timer () {
+            past_time = 0;
+
             start_time = new GLib.DateTime.now_local ();
             source_id = GLib.Timeout.add (1000, timer_handler);
         }

@@ -1,19 +1,9 @@
 namespace KeyTutor {
     public class Services.DBManager : GLib.Object {
-        private static DBManager? instance = null;
-
-        public static DBManager get_default () {
-            if (instance == null) {
-                instance = new DBManager ();
-            }
-
-            return instance;
-        }
-
         private Sqlite.Database db;
         private string errormsg;
 
-        private DBManager () {
+        public DBManager () {
             open_database ();
         }
 
@@ -94,11 +84,10 @@ namespace KeyTutor {
             level_up (locale, (uint8) new_level);
         }
 
-        public void level_up (string locale, owned uint8? level = null) {
+        public void level_up (string locale, uint8? level = null) {
             Sqlite.Statement stmt;
             if (level == null) {
-                level = get_level (locale);
-                ++level;
+                level = get_level (locale) + 1;
             }
 
             int res = db.prepare_v2 ("UPDATE Levels SET level=? WHERE locale=?", -1, out stmt);

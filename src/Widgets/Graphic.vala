@@ -1,70 +1,28 @@
 namespace KeyTutor {
-    public class Widgets.Graphic : Gtk.Grid {
+    public class Widgets.Graphic : Gtk.DrawingArea {
         private const int HEIGHT_SIZE = 400;
         private const int WIDTH_SIZE = 800;
         private const int PADDING_SIZE = 30;
-
         private const int RIGHT_PADDING = 770;
         private const int BOTTOM_PADDING = 370;
 
-        private double[] coords_arr;
-        private Gtk.DrawingArea drawing_area;
-        private Granite.Widgets.ModeButton type_box;
 
-        public signal void changed_type (int type_index);
+        // private int selected_type = 0;
+        // private LevelResults[] level_results;
 
-        private LevelResults[] level_results;
+        private double[] coords;
 
-        public Graphic (LevelResults[] level_results, int act_index = 0) {
-            Object (row_spacing: 5,
-                    expand: true,
+        public Graphic () {
+            Object (expand: true,
                     halign: Gtk.Align.CENTER,
                     valign: Gtk.Align.CENTER);
-
-            this.level_results = level_results;
-
-            type_box = new Granite.Widgets.ModeButton ();
-            type_box.orientation = Gtk.Orientation.HORIZONTAL;
-            type_box.halign = Gtk.Align.END;
-
-            type_box.append_text ("Speed");
-            type_box.append_text ("Accuracy");
-            type_box.mode_changed.connect (toggled_type);
-
-            attach (type_box, 0, 0);
-            show_all ();
-
-            type_box.selected = act_index;
         }
 
-        private unowned void toggled_type () {
-            var exist_widget = get_child_at (0, 1);
-            if (exist_widget != null) {
-                exist_widget.destroy ();
-            }
+        construct {
+            coords = {};
 
-            coords_arr = {};
-
-            int selected_type = type_box.selected;
-
-            changed_type (selected_type);
-
-            for (uint i = 0; i < level_results.length; i++) {
-                if (selected_type == 0) {
-                    coords_arr += level_results[i].speed;
-                } else {
-                    coords_arr += level_results[i].accuracy;
-                }
-            }
-
-            drawing_area = new Gtk.DrawingArea ();
-            drawing_area.set_size_request (WIDTH_SIZE, HEIGHT_SIZE);
-            drawing_area.halign = Gtk.Align.CENTER;
-            drawing_area.valign = Gtk.Align.CENTER;
-            drawing_area.draw.connect (on_draw);
-
-            attach (drawing_area, 0, 1);
-            drawing_area.show_all ();
+            set_size_request (WIDTH_SIZE, HEIGHT_SIZE);
+            draw.connect (on_draw);
         }
 
         private bool on_draw (Cairo.Context ctx) {
@@ -114,8 +72,8 @@ namespace KeyTutor {
             int point_y;
             double coord_proc;
             int point_x = PADDING_SIZE;
-            for (uint i = 0; i < coords_arr.length; i++) {
-                coord_proc = GLib.Math.round (coords_arr[i] * 100.0 / max_coord);
+            for (uint i = 0; i < coords.length; i++) {
+                coord_proc = GLib.Math.round (coords[i] * 100.0 / max_coord);
                 point_y = HEIGHT_SIZE - PADDING_SIZE - 3* (int) coord_proc;
                 if (i == 0) {
                     ctx.move_to (point_x, point_y);
@@ -143,6 +101,12 @@ namespace KeyTutor {
             ctx.restore ();
         }
 
+        public void update_result (double[] r) {
+            coords = r;
+
+            queue_draw ();
+        }
+
         private void add_grid (Cairo.Context ctx, Gtk.Orientation orient, int inc) {
             ctx.save ();
             ctx.set_dash ({2, 2}, 0);
@@ -164,11 +128,11 @@ namespace KeyTutor {
         private int get_coords () {
             double min_val, max_val;
             int max_coord;
-            if (coords_arr.length > 0) {
-                min_val = max_val = coords_arr[0];
-                for (uint i = 0; i < coords_arr.length; i++) {
-                    min_val = double.min (min_val, coords_arr[i]);
-                    max_val = double.max (max_val, coords_arr[i]);
+            if (coords.length > 0) {
+                min_val = max_val = coords[0];
+                for (uint i = 0; i < coords.length; i++) {
+                    min_val = double.min (min_val, coords[i]);
+                    max_val = double.max (max_val, coords[i]);
                 }
 
                 max_coord = (int) (GLib.Math.round (max_val/50.0) * 50);

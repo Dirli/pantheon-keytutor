@@ -25,22 +25,10 @@
     padding: 0.5em;
 }
 .passed-box {
-    background-color: initial;
     border: 1px solid;
     border-color: LightSeaGreen;
-    border-radius: 0.3em;
-    font-size: 26px;
-    font-weight: normal;
-    opacity: 0.9;
-    padding: 0.5em;
 }
 .failed-box {
-    background-color: initial;
     border: 1px solid;
     border-color: Red;
-    border-radius: 0.3em;
-    font-size: 26px;
-    font-weight: normal;
-    opacity: 0.9;
-    padding: 0.5em;
 }

@@ -3,17 +3,31 @@ namespace KeyTutor {
         public signal void change_level ();
         public signal void clear_history ();
 
+        public GLib.Settings settings {
+            get;
+            construct set;
+        }
+
+        public string[] locales_list {
+            get;
+            construct set;
+        }
+
         private bool changed_level = false;
 
-        public Preferences (KeyTutor.MainWindow window, string[] locales_list) {
-            resizable = false;
-            deletable = false;
-            transient_for = window;
-            modal = true;
-            title = "Preferences";
-            set_default_size (300, 150);
+        public Preferences (KeyTutor.MainWindow window, string[] l_list, GLib.Settings s) {
+            Object (resizable: false,
+                deletable: false,
+                transient_for: window,
+                modal: true,
+                title: "Preferences",
+                locales_list: l_list,
+                settings: s);
 
-            var settings = Services.Settings.get_default ();
+        }
+
+        construct {
+            // set_default_size (300, 150);
 
             var data_path = "/usr/share/io.elementary.keytutor/layout/";
 
@@ -84,11 +98,6 @@ namespace KeyTutor {
             errors_switch.tooltip_text = _("Require error correction");
             errors_switch.halign = Gtk.Align.START;
             settings.bind ("correct-error", errors_switch, "active", GLib.SettingsBindFlags.DEFAULT);
-
-            Gtk.Button history_button = new Gtk.Button.with_label (_("Clear history"));
-            history_button.clicked.connect (() => {
-                Services.DBManager.get_default ().reset_database ();
-            });
 
             layout.attach (locales_label,  0, 0);
             layout.attach (locales_exist,  1, 0);
