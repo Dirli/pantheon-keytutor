@@ -12,7 +12,6 @@ namespace KeyTutor {
 
         construct {
             task_letters = new Gtk.ListBox () {
-                // expand = true,
                 selection_mode = Gtk.SelectionMode.BROWSE
             };
 
@@ -23,8 +22,6 @@ namespace KeyTutor {
             var stack_switcher = new Gtk.StackSwitcher ();
             stack_switcher.halign = Gtk.Align.CENTER;
             stack_switcher.valign = Gtk.Align.START;
-            // stack_switcher.homogeneous = true;
-            // stack_switcher.margin_top = 12;
             stack_switcher.stack = tasks_stack;
 
             var tasks_scrolled = new Gtk.ScrolledWindow (null, null) {
@@ -78,6 +75,16 @@ namespace KeyTutor {
             }
         }
 
+        public void open_next_task (int i) {
+            var stack_child = tasks_stack.get_visible_child ();
+            if (stack_child != null) {
+                var locked_row = ((Gtk.ListBox) stack_child).get_row_at_index (i);
+                if (locked_row != null) {
+                    ((Widgets.LayoutRow) locked_row).set_active ();
+                }
+            }
+        }
+
         public void update_tasks_list (string[] tasks_list, uint8? level) {
             task_letters.@foreach ((w) => {
                 task_letters.remove (w);
@@ -88,7 +95,7 @@ namespace KeyTutor {
             for (uint8 i = 0; i < tasks_list.length; i++) {
                 t_name = tasks_list[i].split ("|");
                 task_str = @"$(t_name[0]) " + _("and") + @" $(t_name[1])";
-                task_letters.add (new LayoutRow (task_str, level < i));
+                task_letters.add (new Widgets.LayoutRow (task_str, level < i));
             }
         }
 
@@ -96,29 +103,5 @@ namespace KeyTutor {
             minimum_width = 250;
             natural_width = 300;
         }
-    }
-
-    private class LayoutRow : Gtk.ListBoxRow {
-        public LayoutRow (string t_name, bool lock_row = false) {
-            Gtk.Label row_label = new Gtk.Label (t_name);
-
-            var row_box = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 10) {
-                margin_start = 12,
-                margin_end = 12,
-                margin_top = 6,
-                margin_bottom = 6
-            };
-
-            row_box.add (row_label);
-
-            if (lock_row) {
-                sensitive = false;
-                var row_icon = new Gtk.Image.from_icon_name ("system-lock-screen-symbolic", Gtk.IconSize.SMALL_TOOLBAR);
-                row_box.add (row_icon);
-            }
-
-            add (row_box);
-        }
-
     }
 }

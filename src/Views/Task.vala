@@ -101,20 +101,17 @@ namespace KeyTutor {
             text_widget.set_size_request (-1, 32);
             text_widget.set_justification (Gtk.Justification.CENTER);
 
+            keyboard_widget = new Widgets.Keyboard ();
+
             pack_start (info_box, true, true, 0);
             pack_start (text_widget, true, true, 0);
+            pack_start (keyboard_widget, true, true, 0);
         }
 
         public void init_keyboard (Gee.HashMap<string, uint16> c_map, Gee.HashMap<uint16, string> k_map) {
             chars_map = c_map;
 
-            bool need_attach = keyboard_widget == null;
-
-            keyboard_widget = new Widgets.Keyboard (k_map);
-
-            if (need_attach) {
-                pack_start (keyboard_widget, true, true, 0);
-            }
+            keyboard_widget.init_keys (k_map);
         }
 
         public void reset_state () {

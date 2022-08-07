@@ -135,7 +135,6 @@ namespace KeyTutor {
 
                 }
             });
-            show_all ();
         }
 
         private void on_value_changed () {

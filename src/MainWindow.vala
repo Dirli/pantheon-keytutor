@@ -1,8 +1,8 @@
 namespace KeyTutor {
     public class MainWindow : Gtk.Window {
         private Gtk.Stack main_stack;
+        private Gtk.Box welcome_view;
 
-        private Views.Welcome welcome_view;
         private Views.Task task_view;
         private Views.Result result_view;
         private Views.Statistic stats_view;
@@ -61,11 +61,22 @@ namespace KeyTutor {
 
             set_titlebar (header_bar);
 
-            welcome_view = new Views.Welcome ();
-            welcome_view.welcome_activate.connect (on_welcome_activate);
+            var welcome_widget = new Granite.Widgets.Welcome (_("Keyboard tutor"), _("Trains typing skills on the keyboard."));
+            welcome_widget.append ("media-playback-start", "Run exercise", "Start improving your skills");
+            welcome_widget.append ("keytutor-graphic", "Show statistic", "Here you can follow your progress.");
+            welcome_widget.activated.connect (on_welcome_activate);
 
             tasks_widget = new Widgets.Tasks ();
+
+            welcome_view = new Gtk.Box (Gtk.Orientation.HORIZONTAL, 10);
+
+            welcome_view.add (welcome_widget);
+            welcome_view.add (new Gtk.Separator (Gtk.Orientation.VERTICAL));
             welcome_view.add (tasks_widget);
+
+            var size_group = new Gtk.SizeGroup (Gtk.SizeGroupMode.HORIZONTAL);
+            size_group.add_widget (welcome_widget);
+            size_group.add_widget (tasks_widget);
 
             task_view = new Views.Task ();
             task_view.end_task.connect (on_end_task);
@@ -156,6 +167,7 @@ namespace KeyTutor {
                 //
             });
 
+            preferences.show_all ();
             preferences.run ();
         }
 
@@ -197,6 +209,7 @@ namespace KeyTutor {
 
             if (passed_level && task_type == "letters" && db_conn.get_level (locale) == task_index) {
                 db_conn.level_up (locale);
+                tasks_widget.open_next_task (task_index + 1);
             }
 
             main_stack.set_visible_child_name ("result");

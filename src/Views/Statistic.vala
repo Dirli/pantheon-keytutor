@@ -13,6 +13,7 @@ namespace KeyTutor {
             Object (orientation: Gtk.Orientation.VERTICAL,
                     spacing: 20,
                     expand: true,
+                    margin: 20,
                     valign: Gtk.Align.FILL,
                     halign: Gtk.Align.FILL);
         }
@@ -31,7 +32,8 @@ namespace KeyTutor {
 
             type_box = new Granite.Widgets.ModeButton () {
                 orientation = Gtk.Orientation.HORIZONTAL,
-                halign = Gtk.Align.END
+                halign = Gtk.Align.CENTER,
+                valign = Gtk.Align.END
             };
 
             type_box.append_text ("Speed");
